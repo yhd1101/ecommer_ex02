@@ -1,21 +1,17 @@
 import express from "express";
+import orderModel from "../models/order.js";
 import productModel from "../models/product.js";
-import product from "../models/product.js";
-
 
 const router = express.Router()
-
-
-
-//product 전체를 불러오는 api
 router.get("/", (req, res) =>{
-    productModel
+    orderModel
         .find()
-        .then(products =>{
+        .populate("product")
+        .then(orders =>{
             res.json({
-                msg : "get all products",
-                count : products.length,
-                products : products
+                msg : "get all orders",
+                count : orders.length,
+                orders : orders
             })
         })
         .catch(err => {
@@ -25,18 +21,19 @@ router.get("/", (req, res) =>{
         })
 })
 //특정 product를 불러오는 api
-router.get("/:productid", (req , res) =>{
-    productModel
-        .findById(req.params.productid)
+router.get("/:orderid", (req , res) =>{
+    orderModel
+        .findById(req.params.orderid)
+        .populate("product")
         .then(product => {
-            if(!product){
+            if(!order){
                 return res.json({
                     msg : "No data"
                 })
             }
             res.json({
-                msg : "Successful get product",
-                product : product
+                msg : "Successful get order",
+                order : order
             })
         })
         .catch(err => {
@@ -49,28 +46,21 @@ router.get("/:productid", (req , res) =>{
 
 //product 등록하는 api
 router.post("/create", (req, res) => {
-    // const newProduct = {
-    //     name : req.body.productName,
-    //     price : req.body.productPrice,
-    //     desc : req.body.productDesc
-    // }
 
-    const newProduct = new productModel({
-        name : req.body.productName,
-        price : req.body.productPrice,
-        desc : req.body.productDesc,
-        category : req.body.productCategory
+    const newOrder = new orderModel({
+       product : req.body.product,
+        qty : req.body.qty,
+        memo : req.body.memo
     })
-    newProduct
+    newOrder
         .save()
         .then(result => {
             res.json({
-                msg : "Sucessful create a user",
+                msg : "Sucessful ",
                 user : {
-                    name : result.name,
-                    price : result.price,
-                    desc : result.desc,
-                    id : result._id
+                    product : result.product,
+                    qty : result.qty,
+                    memo : result.memo
                 }
             })
         })
@@ -78,17 +68,14 @@ router.post("/create", (req, res) => {
             res.json({
                 msg : err.message
             })
-    })
+        })
 
 
-    // res.json({
-    //     msg : "created a product",
-    //     product : newProduct
-    // })
+
 })
 
-router.put("/:productid", (req, res) =>{
-    const productid = req.params.productid
+router.put("/:orderid", (req, res) =>{
+    const orderid = req.params.orderid
 
     const updateOps = {}
 
@@ -96,11 +83,11 @@ router.put("/:productid", (req, res) =>{
         updateOps[ops.propName] = ops.value
     }
 
-    productModel
-        .findByIdAndUpdate(productid, {$set : updateOps})
+    orderModel
+        .findByIdAndUpdate(orderid, {$set : updateOps})
         .then(_ => {
             res.json({
-                msg : `update product by ${productid}`
+                msg : `update product by ${orderid}`
             })
         })
         .catch(err =>{
@@ -111,11 +98,11 @@ router.put("/:productid", (req, res) =>{
 })
 //product 전체를 삭제하는 api
 router.delete("/", (req, res) =>{
-    productModel
+    orderModel
         .deleteMany()
         .then(_=> {
             res.json({
-                msg : "deleted all product"
+                msg : "deleted all order"
             })
 
         })
@@ -126,12 +113,12 @@ router.delete("/", (req, res) =>{
         })
 })
 
-router.delete("/:prdoductid", (req , res) =>{
-    productModel
-        .findByIdAndDelete(req.params.productid)
+router.delete("/:ordertid", (req , res) =>{
+    orderModel
+        .findByIdAndDelete(req.params.orderid)
         .then(_=> {
             res.json({
-                msg :"deleted product"
+                msg :"deleted order"
             })
         })
         .catch(err => {
@@ -140,8 +127,6 @@ router.delete("/:prdoductid", (req , res) =>{
             })
         })
 })
-
-
 
 
 export default router

@@ -1,7 +1,8 @@
 import express from "express"
 import productRoutes from "./route/product.js"
 import product from "./route/product.js";
-import orderRouters from "./route/oreder.js"
+import orderRouters from "./route/order.js"
+import userRouters from "./route/user.js"
 import morgan from "morgan"
 import bodyParser from "body-parser";
 import dotEnv from "dotenv"
@@ -18,6 +19,7 @@ app.use(bodyParser.urlencoded({extended : false}))
 app.use(morgan("common"))
 app.use("/product", productRoutes)
 app.use("/order", orderRouters)
+app.use("/user", userRouters)
 
 //데이터베이스 연결정보
 
