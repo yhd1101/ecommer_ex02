@@ -14,10 +14,10 @@ router.post("/signup", (req, res) => {
 //로그인
 router.post("/login", (req, res) => {
     res.json({
-        msg : "logged in user"
+        msg : "logged in used"
     })
 })
 
 
 
-export default router()
+export default router
